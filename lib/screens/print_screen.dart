@@ -46,6 +46,7 @@ class _PrintScreenState extends State<PrintScreen> {
   StreamSubscription<List<blue.ScanResult>>? _scanSubscription;
   StreamSubscription? _bluetoothStateSubscription;
   blue.BluetoothDevice? _connectedDevice;
+  bool _isPrinting = false;
 
   @override
   void initState() {
@@ -68,7 +69,6 @@ class _PrintScreenState extends State<PrintScreen> {
         await Permission.locationWhenInUse.request().isGranted) {
       _scanForDevices();
     } else {
-      // Handle the case where permissions are not granted
       _showDialog('Permissions not granted');
     }
   }
@@ -104,6 +104,12 @@ class _PrintScreenState extends State<PrintScreen> {
 
   Future<void> printDummyReceipt(String address) async {
     try {
+      // Tampilkan loading indicator
+      setState(() {
+        _isPrinting = true;
+      });
+      _showLoadingDialog();
+
       // Membuat data dummy untuk struk
       List<int> receiptBytes = [];
       receiptBytes += [0x1B, 0x40]; // Init printer
@@ -151,8 +157,13 @@ class _PrintScreenState extends State<PrintScreen> {
       print('Receipt printed successfully.');
     } catch (e) {
       print('Error printing receipt: $e');
-      // Handle error: show dialog or log error message
       _showDialog('Error printing receipt: $e');
+    } finally {
+      // Sembunyikan loading indicator
+      setState(() {
+        _isPrinting = false;
+      });
+      Navigator.of(context, rootNavigator: true).pop();
     }
   }
 
@@ -263,6 +274,28 @@ class _PrintScreenState extends State<PrintScreen> {
     );
   }
 
+  void _showLoadingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 16),
+                Text('Printing...'),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -344,7 +377,7 @@ class _PrintScreenState extends State<PrintScreen> {
                 if (_savedAddress == null) {
                   await _selectAndSaveDevice();
                 }
-                if (_savedAddress != null) {
+                if (_savedAddress != null && !_isPrinting) {
                   await printDummyReceipt(_savedAddress!);
                 }
               },
@@ -357,7 +390,7 @@ class _PrintScreenState extends State<PrintScreen> {
                 if (_savedAddress == null) {
                   await _selectAndSaveDevice();
                 }
-                if (_savedAddress != null) {
+                if (_savedAddress != null && !_isPrinting) {
                   await printDummyReceipt(_savedAddress!);
                 }
               },
@@ -368,7 +401,7 @@ class _PrintScreenState extends State<PrintScreen> {
               onPressed: () {
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => ScanQRScreen(clientId: widget.client!.client_id!,role: widget.role,)),
+                  MaterialPageRoute(builder: (context) => ScanQRScreen(clientId: widget.client!.client_id!, role: widget.role)),
                   (Route<dynamic> route) => false,
                 );
               },
