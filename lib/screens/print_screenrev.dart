@@ -123,6 +123,7 @@ class _PrintScreenState extends State<PrintScreen> {
 
       receiptBytes += [0x1B, 0x61, 0x00]; // Reset align center
       receiptBytes += utf8.encode('Guest Name: ${widget.guestBeforeUpdate!.name}\n');
+      receiptBytes += utf8.encode('Table: ...\n');
       receiptBytes += utf8.encode('Headcount: ${widget.updatedCheckIn!.paxChecked}\n');
       receiptBytes += utf8.encode('Category: ${widget.guestBeforeUpdate!.cat}\n');
       receiptBytes += utf8.encode('Date: ${formatDate(widget.eventUpdate!.date)} (${widget.sessionUpdate!.time})\n');

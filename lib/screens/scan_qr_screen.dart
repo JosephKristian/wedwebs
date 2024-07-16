@@ -3,10 +3,13 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 import '../services/database_helper.dart';
 import 'update_guest_screen.dart';
 import '../models/guest_model.dart';
+import 'dashboard_user_screen.dart'; 
+
 
 class ScanQRScreen extends StatefulWidget {
+  final String role;
   final int clientId; // Tambahkan parameter clientId dari DashboardFUserScreen
-  ScanQRScreen({required this.clientId});
+  ScanQRScreen({required this.clientId, required this.role});
 
   @override
   _ScanQRScreenState createState() => _ScanQRScreenState();
@@ -22,8 +25,13 @@ class _ScanQRScreenState extends State<ScanQRScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pop(context); // Kembali ke dashboard ketika tombol kembali ditekan
-        return true;
+        // Kembali ke DashboardUserScreen ketika tombol kembali ditekan
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => DashboardUserScreen(role: widget.role ,)), // Ganti dengan layar dashboard yang sesuai
+          (Route<dynamic> route) => false,
+        );
+        return false; // Menghentikan navigasi default
       },
       child: Scaffold(
         appBar: AppBar(
@@ -101,7 +109,7 @@ class _ScanQRScreenState extends State<ScanQRScreen> {
             await Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => UpdateGuestScreen(guestId: guest.guest_id!), // Menggunakan camelCase guestId
+                builder: (context) => UpdateGuestScreen(guestId: guest.guest_id!, role: widget.role,), // Menggunakan camelCase guestId
               ),
             );
 

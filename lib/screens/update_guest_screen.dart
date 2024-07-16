@@ -9,9 +9,10 @@ import '../services/database_helper.dart';
 import 'print_screen.dart'; // import PrintScreen untuk navigasi
 
 class UpdateGuestScreen extends StatefulWidget {
+  final String role;
   final int guestId;
 
-  UpdateGuestScreen({required this.guestId});
+  UpdateGuestScreen({required this.guestId, required this.role});
 
   @override
   _UpdateGuestScreenState createState() => _UpdateGuestScreenState();
@@ -78,6 +79,7 @@ class _UpdateGuestScreenState extends State<UpdateGuestScreen> {
                 sessionUpdate: _selectedSession,
                 client: _client,
                 updatedCheckIn: _checkIn,
+                role: widget.role,
               ),
             ),
           );

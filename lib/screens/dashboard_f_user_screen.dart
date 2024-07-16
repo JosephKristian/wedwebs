@@ -20,7 +20,7 @@ class DashboardFUserScreen extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.qr_code),
             onPressed: () {
-              _navigateToScanQRScreen(context, clientId);
+              _navigateToScanQRScreen(context, clientId, role);
             },
           ),
           IconButton(
@@ -43,11 +43,11 @@ class DashboardFUserScreen extends StatelessWidget {
     );
   }
 
-  void _navigateToScanQRScreen(BuildContext context, int clientId) {
+  void _navigateToScanQRScreen(BuildContext context, int clientId, String role) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ScanQRScreen(clientId: clientId), // Ensure clientId matches the named parameter in ScanQRScreen
+        builder: (context) => ScanQRScreen(clientId: clientId, role: role,), // Ensure clientId matches the named parameter in ScanQRScreen
       ),
     );
   }
